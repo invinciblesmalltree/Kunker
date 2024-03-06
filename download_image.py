@@ -18,9 +18,9 @@ def get_manifest_list(image, tag, token):
     return response.json()
 
 
-def find_platform_manifest(manifest_list, architecture='amd64', os='linux'):
+def find_platform_manifest(manifest_list, architecture='amd64', system='linux'):
     for manifest in manifest_list["manifests"]:
-        if manifest["platform"]["architecture"] == architecture and manifest["platform"]["os"] == os:
+        if manifest["platform"]["architecture"] == architecture and manifest["platform"]["os"] == system:
             return manifest
     return None
 
@@ -35,10 +35,10 @@ def get_layer_list(image, digest, token):
 
 
 def get_layer(image, digest, token):
-    if not os.path.exists(f"./images/files/"):
-        os.makedirs(f"./images/files/")
     if not os.path.exists(f"./images/rootfs/{image}/"):
         os.makedirs(f"./images/rootfs/{image}/")
+    if not os.path.exists(f"./images/files/"):
+        os.makedirs(f"./images/files/")
     if not os.path.exists(f"./images/files/{digest.split(':')[1]}.tar"):
         headers = {'Authorization': f'Bearer {token}',
                    'Accept': 'application/vnd.oci.image.layer.v1.tar+gzip'}
@@ -47,13 +47,20 @@ def get_layer(image, digest, token):
         response.raise_for_status()
         with open(f"./images/files/{digest.split(':')[1]}.tar", 'wb') as f:
             f.write(response.content)
-    os.system(f"tar -xvf ./images/files/{digest.split(':')[1]}.tar -C ./images/rootfs/{image}/")
+    # os.system(f"tar -xvf ./images/files/{digest.split(':')[1]}.tar -C ./images/rootfs/{image}/")
 
 
-def main():
-    # image = "library/ubuntu"
-    image = "itzg/minecraft-server"
-    tag = "latest"
+def write_layer(image, layer_list, tag):
+    if not os.path.exists(f"./images/manifests/{image}/{tag}/"):
+        os.makedirs(f"./images/manifests/{image}/{tag}/")
+    layer_data = str(layer_list).replace("'", '"')
+    with open(f"./images/manifests/{image}/{tag}/layers.json", 'w') as file:
+        file.write(layer_data)
+
+
+def download_image(image, tag):
+    if not image.count("/"):
+        image = "library/" + image
 
     token = get_token(image)
     print(f"Token: {token[:30]}...")
@@ -75,7 +82,10 @@ def main():
     for layer in layer_list:
         print(layer["digest"])
         get_layer(image, layer["digest"], token)
+    write_layer(image, layer_list, tag)
 
 
 if __name__ == "__main__":
-    main()
+    download_image("library/ubuntu", "latest")
+    # download_image("itzg/minecraft-server", "latest")
+    # download_image("library/busybox", "latest")
