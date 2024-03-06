@@ -55,7 +55,7 @@ def create_container(name, image, tag="latest", command=None, hostname="kunker",
         uid = str(uuid.uuid4())
         containers_data.append({"name": name, "uid": uid, "status": "stopped"})
         json.dump(containers_data, file, indent=4)
-    print("Container created.")
+    print(f"Container created: {uid}")
 
 
 if __name__ == "__main__":
