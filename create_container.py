@@ -48,11 +48,11 @@ def create_container(name, image, tag="latest", command=None, hostname="kunker",
     if not os.path.exists(f"./containers.json"):
         with open("./containers.json", 'w') as file:
             json.dump([], file, indent=4)
-    with open("./containers.json", 'r+') as file:
+    with open("./containers.json", 'r') as file:
         containers_data = json.load(file)
-        file.seek(0)
-        uid = str(uuid.uuid4())
-        containers_data.append({"name": name, "uid": uid, "status": "stopped"})
+    uid = str(uuid.uuid4())
+    containers_data.append({"name": name, "uid": uid, "status": "stopped"})
+    with open("./containers.json", 'w') as file:
         json.dump(containers_data, file, indent=4)
     print(f"Container created: {uid}")
 
