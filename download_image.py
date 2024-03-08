@@ -1,5 +1,6 @@
-import requests
 import os
+import requests
+import sys
 
 
 def get_token(image):
@@ -35,30 +36,27 @@ def get_layer_list(image, digest, token):
 
 
 def get_layer(image, digest, token):
-    if not os.path.exists(f"./images/rootfs/{image}/"):
-        os.makedirs(f"./images/rootfs/{image}/")
-    if not os.path.exists(f"./images/files/"):
-        os.makedirs(f"./images/files/")
-    if not os.path.exists(f"./images/files/{digest.split(':')[1]}.tar"):
+    if not os.path.exists(f"/root/Kunker/images/files/"):
+        os.makedirs(f"/root/Kunker/images/files/")
+    if not os.path.exists(f"/root/Kunker/images/files/{digest.split(':')[1]}.tar"):
         headers = {'Authorization': f'Bearer {token}',
                    'Accept': 'application/vnd.oci.image.layer.v1.tar+gzip'}
         url = f"https://registry-1.docker.io/v2/{image}/blobs/{digest}/"
         response = requests.get(url, headers=headers)
         response.raise_for_status()
-        with open(f"./images/files/{digest.split(':')[1]}.tar", 'wb') as f:
+        with open(f"/root/Kunker/images/files/{digest.split(':')[1]}.tar", 'wb') as f:
             f.write(response.content)
-    # os.system(f"tar -xvf ./images/files/{digest.split(':')[1]}.tar -C ./images/rootfs/{image}/")
 
 
 def write_layer(image, layer_list, tag):
-    if not os.path.exists(f"./images/manifests/{image}/{tag}/"):
-        os.makedirs(f"./images/manifests/{image}/{tag}/")
+    if not os.path.exists(f"/root/Kunker/images/manifests/{image}/{tag}/"):
+        os.makedirs(f"/root/Kunker/images/manifests/{image}/{tag}/")
     layer_data = str(layer_list).replace("'", '"')
-    with open(f"./images/manifests/{image}/{tag}/layers.json", 'w') as file:
+    with open(f"/root/Kunker/images/manifests/{image}/{tag}/layers.json", 'w') as file:
         file.write(layer_data)
 
 
-def download_image(image, tag):
+def download_image(image, tag="latest"):
     if not image.count("/"):
         image = "library/" + image
 
@@ -86,6 +84,12 @@ def download_image(image, tag):
 
 
 if __name__ == "__main__":
-    download_image("library/ubuntu", "latest")
+    if len(sys.argv) > 2:
+        download_image(sys.argv[1], sys.argv[2])
+    elif len(sys.argv) == 2:
+        download_image(sys.argv[1])
+    else:
+        print("Usage: kunker pull <image> [tag]")
+    # download_image("library/ubuntu", "latest")
     # download_image("itzg/minecraft-server", "latest")
     # download_image("library/busybox", "latest")
