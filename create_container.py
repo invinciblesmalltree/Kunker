@@ -14,6 +14,19 @@ def unpack_layer(name, digest):
     os.system(f"tar zxf /root/Kunker/images/files/{digest.split(':')[1]}.tar -C /root/Kunker/containers/{name}/rootfs/")
 
 
+def get_net_params(containers_data):
+    net_list = []
+    for container in containers_data:
+        net_list.append(container["net"]["id"])
+    net_list.sort()
+    net_id = 1
+    for net in net_list:
+        if net != net_id:
+            return net_id, f"172.10.{net_id // 254 + 1}.{net_id % 254 + 1}"
+        net_id += 1
+    return 1, f"172.10.1.2"
+
+
 def create_container(name, image, tag="latest", command=None, hostname="kunker", cwd="/"):
     if command is None:
         command = ["bash"]
@@ -57,7 +70,8 @@ def create_container(name, image, tag="latest", command=None, hostname="kunker",
     with open("/root/Kunker/containers.json", 'r') as file:
         containers_data = json.load(file)
     uid = str(uuid.uuid4())
-    containers_data.append({"name": name, "uid": uid, "status": "stopped"})
+    net_id, net_ip = get_net_params(containers_data)
+    containers_data.append({"name": name, "uid": uid, "status": "stopped", "net": {"id": net_id, "ip": net_ip}})
     with open("/root/Kunker/containers.json", 'w') as file:
         json.dump(containers_data, file, indent=4)
     print(f"Container created: {uid}")
