@@ -89,7 +89,7 @@ if __name__ == "__main__":
     elif len(sys.argv) == 2:
         download_image(sys.argv[1])
     else:
-        print("Usage: kunker pull <image> [tag]")
+        print("Usage: kunker pull <images> [tag]")
     # download_image("library/ubuntu", "latest")
     # download_image("itzg/minecraft-server", "latest")
     # download_image("library/busybox", "latest")

@@ -100,7 +100,7 @@ if __name__ == "__main__":
         if arg.count("="):
             key, value = arg.split("=")
             args[key] = value
-    if len(args["name"]) > 40:
+    if "name" in args and len(args["name"]) > 40:
         print("Name too long. Maximum length is 40 characters.")
         exit(0)
     if "cmd" in args:
