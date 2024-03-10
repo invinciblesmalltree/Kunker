@@ -1,6 +1,5 @@
 apt update
-apt install -y python3
-apt install -y runc
+apt install -y python3 runc tmux
 mkdir /root/Kunker
 cp -r ./* /root/Kunker
 chmod +x /root/Kunker/kunker
