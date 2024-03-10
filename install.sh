@@ -18,3 +18,4 @@ systemctl enable kunker
 ip link add name kunker-br0 type bridge
 ip addr add 172.10.1.1/16 dev kunker-br0
 ip link set dev kunker-br0 up
+python3 /root/Kunker/setup.py
