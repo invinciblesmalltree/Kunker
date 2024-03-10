@@ -92,11 +92,13 @@ def delete_container(name_or_uid):
 
 def list_containers():
     print("Name\t\t\t\t\tUID\t\t\t\t\t\tStatus")
+    if not os.path.exists("/root/Kunker/containers.json"):
+        return
     with open("/root/Kunker/containers.json", 'r') as file:
         containers_data = json.load(file)
     for container in containers_data:
         print(f"{container['name']}" + "\t" * (
-                    5 - len(container['name']) // 8) + f"({container['uid']})\t\t{container['status']}")
+                5 - len(container['name']) // 8) + f"({container['uid']})\t\t{container['status']}")
 
 
 if __name__ == "__main__":
