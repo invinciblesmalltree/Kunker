@@ -100,3 +100,5 @@ kunker create name=mc image=itzg/minecraft-server
 ```
 
 创建或进入容器时如未指定启动的程序，则将默认使用bash，因此如果使用busybox之类的比较精简的镜像，请手动指定启动命令为sh（或其它shell）。
+
+如想使用网络的话，请禁用ufw，本程序使用iptables来管理。
