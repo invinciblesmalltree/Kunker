@@ -21,6 +21,10 @@ os.system("ip link add name kunker-br0 type bridge")
 os.system("ip addr add 172.10.1.1/16 dev kunker-br0")
 os.system("ip link set dev kunker-br0 up")
 
+if not os.path.exists("/root/Kunker/containers.json"):
+    with open("/root/Kunker/containers.json", 'w') as file:
+        json.dump([], file, indent=4)
+
 with open("/root/Kunker/containers.json", 'r') as file:
     containers_data = json.load(file)
 for index, container in enumerate(containers_data):
