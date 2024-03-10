@@ -1,5 +1,6 @@
 apt update
-apt install python3
+apt install -y python3
+apt install -y runc
 mkdir /root/Kunker
 cp -r ./* /root/Kunker
 chmod +x /root/Kunker/kunker
