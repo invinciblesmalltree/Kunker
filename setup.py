@@ -30,7 +30,7 @@ for index, container in enumerate(containers_data):
     os.system(f"ip link set veth{container['net']['id']} master kunker-br0")
     os.system(f"ip link set veth{container['net']['id']} up")
     os.system(
-        f"ip netns exec kunker-ns{container['net']['id']} ip addr add {container['net']['ip']}/16 dev kunker-eth{container['net']['id']}  ")
+        f"ip netns exec kunker-ns{container['net']['id']} ip addr add {container['net']['ip']}/16 dev kunker-eth{container['net']['id']}")
     os.system(f"ip netns exec kunker-ns{container['net']['id']} ip link set kunker-eth{container['net']['id']} up")
     os.system(f"ip netns exec kunker-ns{container['net']['id']} ip route add default via 172.10.1.1")
     if container["status"] == "running":

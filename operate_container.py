@@ -82,6 +82,8 @@ def delete_container(name_or_uid):
     os.system(f"rm -rf /root/Kunker/containers/{container_data['name']}")
     with open("/root/Kunker/containers.json", 'r') as file:
         containers_data = json.load(file)
+    os.system(f"ip link delete veth{container_data['net']['id']}")
+    os.system(f"ip netns delete kunker-ns{container_data['net']['id']}")
     containers_data.pop(index)
     with open("/root/Kunker/containers.json", 'w') as file:
         json.dump(containers_data, file, indent=4)
@@ -89,10 +91,12 @@ def delete_container(name_or_uid):
 
 
 def list_containers():
+    print("Name\t\t\t\t\tUID\t\t\t\t\t\tStatus")
     with open("/root/Kunker/containers.json", 'r') as file:
         containers_data = json.load(file)
     for container in containers_data:
-        print(f"{container['name']}\t\t({container['uid']})\t\t{container['status']}")
+        print(f"{container['name']}" + "\t" * (
+                    5 - len(container['name']) // 8) + f"({container['uid']})\t\t{container['status']}")
 
 
 if __name__ == "__main__":
