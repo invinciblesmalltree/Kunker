@@ -36,23 +36,23 @@ def get_layer_list(image, digest, token):
 
 
 def get_layer(image, digest, token):
-    if not os.path.exists(f"/root/Kunker/images/files/"):
-        os.makedirs(f"/root/Kunker/images/files/")
-    if not os.path.exists(f"/root/Kunker/images/files/{digest.split(':')[1]}.tar"):
+    if not os.path.exists(f"/usr/local/share/kunker/images/files/"):
+        os.makedirs(f"/usr/local/share/kunker/images/files/")
+    if not os.path.exists(f"/usr/local/share/kunker/images/files/{digest.split(':')[1]}.tar"):
         headers = {'Authorization': f'Bearer {token}',
                    'Accept': 'application/vnd.oci.image.layer.v1.tar+gzip'}
         url = f"https://registry-1.docker.io/v2/{image}/blobs/{digest}/"
         response = requests.get(url, headers=headers)
         response.raise_for_status()
-        with open(f"/root/Kunker/images/files/{digest.split(':')[1]}.tar", 'wb') as f:
+        with open(f"/usr/local/share/kunker/images/files/{digest.split(':')[1]}.tar", 'wb') as f:
             f.write(response.content)
 
 
 def write_layer(image, layer_list, tag):
-    if not os.path.exists(f"/root/Kunker/images/manifests/{image}/{tag}/"):
-        os.makedirs(f"/root/Kunker/images/manifests/{image}/{tag}/")
+    if not os.path.exists(f"/usr/local/share/kunker/images/manifests/{image}/{tag}/"):
+        os.makedirs(f"/usr/local/share/kunker/images/manifests/{image}/{tag}/")
     layer_data = str(layer_list).replace("'", '"')
-    with open(f"/root/Kunker/images/manifests/{image}/{tag}/layers.json", 'w') as file:
+    with open(f"/usr/local/share/kunker/images/manifests/{image}/{tag}/layers.json", 'w') as file:
         file.write(layer_data)
 
 
@@ -90,6 +90,3 @@ if __name__ == "__main__":
         download_image(sys.argv[1])
     else:
         print("Usage: kunker pull <images> [tag]")
-    # download_image("library/ubuntu", "latest")
-    # download_image("itzg/minecraft-server", "latest")
-    # download_image("library/busybox", "latest")

@@ -5,7 +5,7 @@
 下载release里的包，解压，进入对应的文件夹，运行
 
 ```sh
-bash install.sh
+sudo ./install
 ```
 
 因为安装之后文件将释放到`/root/Kunker`，因此请确保用root用户运行
@@ -15,79 +15,79 @@ bash install.sh
 1. 拉取镜像
 
    ```sh
-   kunker pull <images> [tag]
+   sudo kunker pull <images> [tag]
    ```
 
    举例：
 
    ```sh
-   kunker pull ubuntu	
+   sudo kunker pull ubuntu	
    ```
 
 2. 创建容器
 
    ```sh
-   kunker create name=<name> image=<image> [tag=<tag>] [cmd=<command>] [hostname=<hostname>] [cwd=<cwd>]
+   sudo kunker create name=<name> image=<image> [tag=<tag>] [cmd=<command>] [hostname=<hostname>] [cwd=<cwd>]
    ```
 
    举例：
 
    ```sh
-   kunker create name=ubuntu image=ubuntu hostname=ubuntu
+   sudo kunker create name=ubuntu image=ubuntu hostname=ubuntu
    ```
 
 3. 启动容器
 
    ```sh
-   kunker start <container_name_or_id>
+   sudo kunker start <container_name_or_id>
    ```
 
    举例：
 
    ```sh
-   kunker start ubuntu
+   sudo kunker start ubuntu
    ```
 
 4. 进入容器
 
    ```sh
-   kunker enter <container_name_or_id> [command]
+   sudo kunker enter <container_name_or_id> [command]
    ```
 
    举例：
 
    ```sh
-   kunker enter ubuntu bash
+   sudo kunker enter ubuntu bash
    ```
 
 5. 停止容器
 
    ```sh
-   kunker stop <container_name_or_id>
+   sudo kunker stop <container_name_or_id>
    ```
 
    举例：
 
    ```sh
-   kunker stop ubuntu
+   sudo kunker stop ubuntu
    ```
 
 6. 删除容器
 
    ```sh
-   kunker delete <container_name_or_id>
+   sudo kunker delete <container_name_or_id>
    ```
 
    举例：
 
    ```sh
-   kunker delete ubuntu
+   sudo kunker delete ubuntu
    ```
 
 7. 列出容器
 
    ```sh
-   kunker list
+   sudo kunker list
    ```
 
 ## 其他注意事项
@@ -95,8 +95,8 @@ bash install.sh
 拉取镜像的时候如果是非library的镜像，请在镜像前面补齐作者名字，用斜杠分隔，比如：
 
 ```sh
-kunker pull itzg/minecraft-server
-kunker create name=mc image=itzg/minecraft-server
+sudo kunker pull itzg/minecraft-server
+sudo kunker create name=mc image=itzg/minecraft-server
 ```
 
 创建或进入容器时如未指定启动的程序，则将默认使用bash，因此如果使用busybox之类的比较精简的镜像，请手动指定启动命令为sh（或其它shell）。

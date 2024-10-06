@@ -4,7 +4,7 @@ import sys
 
 
 def find_container(name_or_uid):
-    with open("/root/Kunker/containers.json", 'r') as file:
+    with open("/usr/local/share/kunker/containers.json", 'r') as file:
         containers_data = json.load(file)
     for index, container in enumerate(containers_data):
         if container["name"] == name_or_uid or container["uid"] == name_or_uid:
@@ -24,11 +24,11 @@ def run_container(name_or_uid):
         return
 
     os.system(
-        f"cd /root/Kunker/containers/{container_data['name']} && tmux new-session -d -s kunker_{container_data['name']} \"runc run {container_data['uid']}\"")
-    with open("/root/Kunker/containers.json", 'r') as file:
+        f"cd /usr/local/share/kunker/containers/{container_data['name']} && tmux new-session -d -s kunker_{container_data['name']} \"runc run {container_data['uid']}\"")
+    with open("/usr/local/share/kunker/containers.json", 'r') as file:
         containers_data = json.load(file)
     containers_data[index]["status"] = "running"
-    with open("/root/Kunker/containers.json", 'w') as file:
+    with open("/usr/local/share/kunker/containers.json", 'w') as file:
         json.dump(containers_data, file, indent=4)
     print("Container running.")
 
@@ -59,11 +59,11 @@ def stop_container(name_or_uid):
         return
 
     os.system(
-        f"cd /root/Kunker/containers/{container_data['name']} && tmux kill-session -t kunker_{container_data['name']}")
-    with open("/root/Kunker/containers.json", 'r') as file:
+        f"cd /usr/local/share/kunker/containers/{container_data['name']} && tmux kill-session -t kunker_{container_data['name']}")
+    with open("/usr/local/share/kunker/containers.json", 'r') as file:
         containers_data = json.load(file)
     containers_data[index]["status"] = "stopped"
-    with open("/root/Kunker/containers.json", 'w') as file:
+    with open("/usr/local/share/kunker/containers.json", 'w') as file:
         json.dump(containers_data, file, indent=4)
     print("Container stopped.")
 
@@ -77,24 +77,24 @@ def delete_container(name_or_uid):
 
     if container_data["status"] == "running":
         os.system(
-            f"cd /root/Kunker/containers/{container_data['name']} && tmux kill-session -t kunker_{container_data['name']}")
+            f"cd /usr/local/share/kunker/containers/{container_data['name']} && tmux kill-session -t kunker_{container_data['name']}")
 
-    os.system(f"rm -rf /root/Kunker/containers/{container_data['name']}")
-    with open("/root/Kunker/containers.json", 'r') as file:
+    os.system(f"rm -rf /usr/local/share/kunker/containers/{container_data['name']}")
+    with open("/usr/local/share/kunker/containers.json", 'r') as file:
         containers_data = json.load(file)
     os.system(f"ip link delete veth{container_data['net']['id']}")
     os.system(f"ip netns delete kunker-ns{container_data['net']['id']}")
     containers_data.pop(index)
-    with open("/root/Kunker/containers.json", 'w') as file:
+    with open("/usr/local/share/kunker/containers.json", 'w') as file:
         json.dump(containers_data, file, indent=4)
     print("Container deleted.")
 
 
 def list_containers():
     print("Name\t\t\t\t\tUID\t\t\t\t\t\tStatus")
-    if not os.path.exists("/root/Kunker/containers.json"):
+    if not os.path.exists("/usr/local/share/kunker/containers.json"):
         return
-    with open("/root/Kunker/containers.json", 'r') as file:
+    with open("/usr/local/share/kunker/containers.json", 'r') as file:
         containers_data = json.load(file)
     for container in containers_data:
         print(f"{container['name']}" + "\t" * (

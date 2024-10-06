@@ -21,11 +21,11 @@ os.system("ip link add name kunker-br0 type bridge")
 os.system("ip addr add 172.10.1.1/16 dev kunker-br0")
 os.system("ip link set dev kunker-br0 up")
 
-if not os.path.exists("/root/Kunker/containers.json"):
-    with open("/root/Kunker/containers.json", 'w') as file:
+if not os.path.exists("/usr/local/share/kunker/containers.json"):
+    with open("/usr/local/share/kunker/containers.json", 'w') as file:
         json.dump([], file, indent=4)
 
-with open("/root/Kunker/containers.json", 'r') as file:
+with open("/usr/local/share/kunker/containers.json", 'r') as file:
     containers_data = json.load(file)
 for index, container in enumerate(containers_data):
     os.system(f"ip netns add kunker-ns{container['net']['id']}")
@@ -39,7 +39,7 @@ for index, container in enumerate(containers_data):
     os.system(f"ip netns exec kunker-ns{container['net']['id']} ip route add default via 172.10.1.1")
     if container["status"] == "running":
         containers_data[index]["status"] = "stopped"
-with open("/root/Kunker/containers.json", 'w') as file:
+with open("/usr/local/share/kunker/containers.json", 'w') as file:
     json.dump(containers_data, file, indent=4)
 os.system("sysctl -w net.ipv4.ip_forward=1")
 os.system(f"iptables -t nat -A POSTROUTING -s 172.10.0.0/16 -o {get_default_route_interface()} -j MASQUERADE")

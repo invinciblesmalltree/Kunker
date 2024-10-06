@@ -5,13 +5,13 @@ import uuid
 
 
 def read_layer(image, tag):
-    with open(f"/root/Kunker/images/manifests/{image}/{tag}/layers.json", 'r') as file:
+    with open(f"/usr/local/share/kunker/images/manifests/{image}/{tag}/layers.json", 'r') as file:
         layer_data = json.load(file)
     return layer_data
 
 
 def unpack_layer(name, digest):
-    os.system(f"tar zxf /root/Kunker/images/files/{digest.split(':')[1]}.tar -C /root/Kunker/containers/{name}/rootfs/")
+    os.system(f"tar zxf /usr/local/share/kunker/images/files/{digest.split(':')[1]}.tar -C /usr/local/share/kunker/containers/{name}/rootfs/")
 
 
 def get_net_params(containers_data):
@@ -34,35 +34,35 @@ def create_container(name, image, tag="latest", command=None, hostname="kunker",
     if not image.count("/"):
         image = "library/" + image
 
-    if os.path.exists(f"/root/Kunker/containers/{name}/"):
+    if os.path.exists(f"/usr/local/share/kunker/containers/{name}/"):
         print("Container already exists.")
         return
 
-    if not os.path.exists(f"/root/Kunker/images/manifests/{image}/{tag}/layers.json"):
+    if not os.path.exists(f"/usr/local/share/kunker/images/manifests/{image}/{tag}/layers.json"):
         print("Image not found.")
         return
 
-    os.makedirs(f"/root/Kunker/containers/{name}/rootfs/")
+    os.makedirs(f"/usr/local/share/kunker/containers/{name}/rootfs/")
 
-    if not os.path.exists(f"/root/Kunker/containers.json"):
-        with open("/root/Kunker/containers.json", 'w') as file:
+    if not os.path.exists(f"/usr/local/share/kunker/containers.json"):
+        with open("/usr/local/share/kunker/containers.json", 'w') as file:
             json.dump([], file, indent=4)
 
-    with open("/root/Kunker/containers.json", 'r') as file:
+    with open("/usr/local/share/kunker/containers.json", 'r') as file:
         containers_data = json.load(file)
     net_id, net_ip = get_net_params(containers_data)
 
-    with open(f"/root/Kunker/images/configs/config.json", 'r') as file:
+    with open(f"/usr/local/share/kunker/images/configs/config.json", 'r') as file:
         config_data = json.load(file)
     config_data["process"]["args"] = command
-    config_data["root"]["path"] = f"/root/Kunker/containers/{name}/rootfs/"
+    config_data["root"]["path"] = f"/usr/local/share/kunker/containers/{name}/rootfs/"
     config_data["hostname"] = hostname
     config_data["cwd"] = cwd
     for index, namespace in enumerate(config_data["linux"]["namespaces"]):
         if namespace["type"] == "network":
             config_data["linux"]["namespaces"][index]["path"] = f"/var/run/netns/kunker-ns{net_id}"
             break
-    with open(f"/root/Kunker/containers/{name}/config.json", 'w') as file:
+    with open(f"/usr/local/share/kunker/containers/{name}/config.json", 'w') as file:
         json.dump(config_data, file, indent=4)
     print("Config created.")
 
@@ -74,11 +74,11 @@ def create_container(name, image, tag="latest", command=None, hostname="kunker",
         unpack_layer(name, layer["digest"])
         print(f"Unpacking {layer['digest']}")
 
-    os.system(f"cp -f /etc/resolv.conf /root/Kunker/containers/{name}/rootfs/etc/resolv.conf")
+    os.system(f"cp -f /etc/resolv.conf /usr/local/share/kunker/containers/{name}/rootfs/etc/resolv.conf")
 
     uid = str(uuid.uuid4())
     containers_data.append({"name": name, "uid": uid, "status": "stopped", "net": {"id": net_id, "ip": net_ip}})
-    with open("/root/Kunker/containers.json", 'w') as file:
+    with open("/usr/local/share/kunker/containers.json", 'w') as file:
         json.dump(containers_data, file, indent=4)
 
     os.system(f"ip netns add kunker-ns{net_id}")
